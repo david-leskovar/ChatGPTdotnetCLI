@@ -17,15 +17,14 @@ namespace ChatGPT
             Console.WriteLine(raw);
 
 
-            var lastIndex = raw.LastIndexOf('\n');
-            string guess = raw.Substring(lastIndex + 1);
+           
 
             Console.ResetColor();
 
-            TextCopy.ClipboardService.SetText(guess);
+            TextCopy.ClipboardService.SetText(raw);
 
 
-            return guess;
+            return raw;
         }
 
         public static async Task Main(string[] args)
@@ -54,6 +53,9 @@ namespace ChatGPT
                 HttpResponseMessage response = await client.PostAsync("https://api.openai.com/v1/completions", content);
                 string responseString = await response.Content.ReadAsStringAsync();
 
+               
+
+
                 if (!response.IsSuccessStatusCode)
                 {
                     ResponseError? res = JsonSerializer.Deserialize<ResponseError>(responseString);
@@ -71,14 +73,17 @@ namespace ChatGPT
                 {
                     var data = JsonConvert.DeserializeObject<dynamic>(responseString);
 
-                    string guess = Guess(data!.choices[0].text);
 
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"---> My guess at the command prompt is:  {guess}");
+
+                    Guess(Convert.ToString(data!.choices[0].text));
+
+                    
                     Console.ResetColor();
                 }
                 catch (Exception ex)
                 {
+
+                    Console.WriteLine("Ka dajle");
                     Console.WriteLine(ex.Message);
                 }
 
